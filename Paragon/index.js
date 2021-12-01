@@ -118,3 +118,38 @@ function recount() {
 function editRow() {
 
 }
+function moveClick() {
+    let listElements = document.getElementsByClassName("index");
+    for(let i=0;i<listElements.length;i++){
+        if(i == 0){
+            listElements[i].innerHTML = "<button id="+i+" onclick="+"moveButtonDown(this.id)"+">▼</button>"
+        } else if (i == listElements.length - 1){
+            listElements[i].innerHTML = "<button id="+i+" onclick="+"moveButtonUp(this.id)"+">▲</button>"
+        } else{
+            listElements[i].innerHTML = "<button id="+i+" onclick="+"moveButtonUp(this.id)"+">▲</button><br><button id="+i+" onclick="+"moveButtonDown(this.id)"+">▼</button>";
+        }
+    }
+    document.getElementById("moveButton").onclick = confirmMoves;
+    document.getElementById("moveButton").innerText = "Anuluj";
+}
+function moveButtonDown(id) {
+    itemCollection.splice(id+1, 0, itemCollection.splice(id, 1)[0]);
+    localStorage.setItem("collection", JSON.stringify(itemCollection));
+    recount();
+    refresh();
+    moveClick();
+}
+function moveButtonUp(id){
+    itemCollection.splice(id-1, 0, itemCollection.splice(id, 1)[0]);
+    localStorage.setItem("collection", JSON.stringify(itemCollection));
+    recount();
+    refresh();
+    moveClick();
+}
+
+function confirmMoves() {
+    refresh();
+    document.getElementById("moveButton").onclick = moveClick;
+    document.getElementById("moveButton").innerText = "Przesuń";
+
+}
