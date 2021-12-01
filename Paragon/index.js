@@ -1,5 +1,9 @@
 let itemCollection = [];
 let editing = false;
+let nameCorrect = true;
+let countCorrect = true;
+let priceCorrect = true;
+let validationCorrect = true;
 if (localStorage.getItem("collection").length > 2) {
     itemCollection = JSON.parse(localStorage.getItem("collection"));
 }
@@ -14,18 +18,18 @@ class Item {
         this.sum = (+this.sum).toFixed(2);
     }
 }
-function disableButtons(except){
+function disableButtons(except) {
     let buttons = document.getElementsByClassName("button");
-    for(let i=0;i<buttons.length;i++){
+    for (let i = 0; i < buttons.length; i++) {
         buttons[i].disabled = true;
     }
     editing = true;
-    if(except != "nothing")
+    if (except != "nothing")
         document.getElementById(except).disabled = false;
 }
-function enableButtons(){
+function enableButtons() {
     let buttons = document.getElementsByClassName("button");
-    for(let i=0;i<buttons.length;i++){
+    for (let i = 0; i < buttons.length; i++) {
         buttons[i].disabled = false;
     }
     editing = false;
@@ -49,9 +53,9 @@ function addClick() {
     document.getElementById("addButton").onclick = confirmClick;
     document.getElementById("addButton").innerText = "Zatwierdź";
     disableButtons("addButton");
-    document.addEventListener("keyup",function confirmWithEnter(event){
-        if(event.code == "Enter"){
-            document.removeEventListener("keyup",confirmWithEnter);
+    document.addEventListener("keyup", function confirmWithEnter(event) {
+        if (event.code == "Enter") {
+            document.removeEventListener("keyup", confirmWithEnter);
             confirmClick();
         }
     });
@@ -62,13 +66,41 @@ function confirmClick() {
     let name = document.getElementById("inputName").value;
     let count = document.getElementById("inputCount").value;
     let price = document.getElementById("inputPrice").value;
-    if(isNaN(count)||count.length===0)
-        count=0;
-    if(isNaN(price)||price.length===0)
-        price=0;
+    if (name.length === 0)
+        nameCorrect = false;
+    if (isNaN(count) || count.length === 0)
+        countCorrect = false;
+    if (isNaN(price) || price.length === 0)
+        priceCorrect = false;
+    if (nameCorrect === false) {
+        nameCorrect = true;
+        validationCorrect = false;
+        document.getElementById("inputName").style.border = "red solid";
+    } else document.getElementById("inputName").style.border = null;
+    if (countCorrect === false) {
+        countCorrect = true;
+        validationCorrect = false;
+        document.getElementById("inputCount").style.border = "red solid";
+    } else document.getElementById("inputCount").style.border = null;
+    if (priceCorrect === false) {
+        priceCorrect = true;
+        validationCorrect = false
+        document.getElementById("inputPrice").style.border = "red solid";
+    } else document.getElementById("inputPrice").style.border = null;
+    if (validationCorrect === false) {
+        validationCorrect = true;
+        document.addEventListener("keyup", function confirmWithEnter(event) {
+            if (event.code == "Enter") {
+                document.removeEventListener("keyup", confirmWithEnter);
+                confirmClick();
+            }
+        });
+        return;
+    }
+
     price = (+price).toFixed(2);
     count = (+count).toFixed(2);
-    if(name.length===0)
+    if (name.length === 0)
         name = "placeholder";
     let newRow = new Item(id, name, count, price);
     itemCollection.push(newRow);
@@ -76,8 +108,9 @@ function confirmClick() {
     refresh();
     document.getElementById("addButton").onclick = addClick;
     document.getElementById("addButton").innerText = "Dodaj";
-
+    console.log("test");
     enableButtons();
+    console.log("test2");
 }
 
 function refresh() {
@@ -90,34 +123,58 @@ function refresh() {
     for (let i = 0; i < itemCollection.length; i++) {
         allSum += (+itemCollection[i].sum);
         let newRow = document.createElement("tr");
-        newRow.addEventListener("dblclick", function editStart(){
-            if(editing === true)
+        newRow.addEventListener("dblclick", function editStart() {
+            if (editing === true)
                 return;
             editing = true;
             disableButtons("nothing");
-            this.removeEventListener("dblclick",editStart);
-            this.innerHTML =    "<td class='index'>" + itemCollection[i].id + "</td>" +
-                                "<td><input type='text' value='" + itemCollection[i].name + "' id=inputName" + itemCollection[i].id + "></td>" +
-                                "<td><input type='text' value=" + itemCollection[i].ccount + " id=inputCount" + itemCollection[i].id + "></td>" +
-                                "<td><input type='text' value=" + itemCollection[i].price + " id=inputPrice" + itemCollection[i].id + "></td>" +
-                                "<td>-.-- zł</td>";
-            this.addEventListener("keyup", function editEnd(event){
-                if(event.code=="Enter"){
-                    itemCollection[i].name = document.getElementById("inputName"+itemCollection[i].id).value;
-                    itemCollection[i].ccount = document.getElementById("inputCount"+itemCollection[i].id).value;
-                    itemCollection[i].price = document.getElementById("inputPrice"+itemCollection[i].id).value;
-                    if(itemCollection[i].name.length===0)
-                        itemCollection[i].name = "placeholder";
-                    if(isNaN(itemCollection[i].ccount)||itemCollection[i].ccount.length===0)
-                        itemCollection[i].ccount=0;
-                    if(isNaN(itemCollection[i].price)||itemCollection[i].price.length===0)
-                        itemCollection[i].price=0;
-                    itemCollection[i].sum = (itemCollection[i].price * itemCollection[i].ccount);
-                    itemCollection[i].price = (+itemCollection[i].price).toFixed(2);
-                    itemCollection[i].ccount = (+itemCollection[i].ccount).toFixed(2);
+            this.removeEventListener("dblclick", editStart);
+            this.innerHTML = "<td class='index'>" + itemCollection[i].id + "</td>" +
+                "<td><input type='text' value='" + itemCollection[i].name + "' id=inputName" + itemCollection[i].id + "></td>" +
+                "<td><input type='text' value=" + itemCollection[i].ccount + " id=inputCount" + itemCollection[i].id + "></td>" +
+                "<td><input type='text' value=" + itemCollection[i].price + " id=inputPrice" + itemCollection[i].id + "></td>" +
+                "<td>-.-- zł</td>";
+            this.addEventListener("keyup", function editEnd(event) {
+                if (event.code == "Enter") {
+                    tempname = document.getElementById("inputName" + itemCollection[i].id).value;
+                    tempcount = document.getElementById("inputCount" + itemCollection[i].id).value;
+                    tempprice = document.getElementById("inputPrice" + itemCollection[i].id).value;
+                    if (tempname.length === 0)
+                        nameCorrect = false;
+                    if (isNaN(tempcount) || tempcount.length === 0)
+                        countCorrect = false;
+                    if (isNaN(tempprice) || tempprice.length === 0)
+                        priceCorrect = false;
+                    if (nameCorrect === false) {
+                        nameCorrect = true;
+                        validationCorrect = false;
+                        document.getElementById("inputName" + itemCollection[i].id).style.border = "red solid";
+                    } else document.getElementById("inputName" + itemCollection[i].id).style.border = null;
+
+                    if (countCorrect === false) {
+                        countCorrect = true;
+                        validationCorrect = false;
+                        document.getElementById("inputCount" + itemCollection[i].id).style.border = "red solid";
+                    } else document.getElementById("inputCount" + itemCollection[i].id).style.border = null;
+
+                    if (priceCorrect === false) {
+                        priceCorrect = true;
+                        validationCorrect = false
+                        document.getElementById("inputPrice" + itemCollection[i].id).style.border = "red solid";
+                    } else document.getElementById("inputPrice" + itemCollection[i].id).style.border = null;
+
+                    if (validationCorrect === false) {
+                        validationCorrect = true;
+                        return;
+                    }
+
+
+                    itemCollection[i].sum = (tempprice * tempcount);
+                    itemCollection[i].price = (+tempprice).toFixed(2);
+                    itemCollection[i].ccount = (+tempcount).toFixed(2);
                     itemCollection[i].sum = (+itemCollection[i].sum).toFixed(2);
                     localStorage.setItem("collection", JSON.stringify(itemCollection));
-                    this.removeEventListener("keyup",editEnd);
+                    this.removeEventListener("keyup", editEnd);
                     refresh();
                     editing = false;
                     enableButtons();
@@ -146,8 +203,8 @@ function resetLocalstorage() {
 
 function removeClick() {
     let listElements = document.getElementsByClassName("index");
-    for(let i=0;i<listElements.length;i++){
-        listElements[i].innerHTML = "<input type='checkbox' id=checkbox"+(i+1)+">";
+    for (let i = 0; i < listElements.length; i++) {
+        listElements[i].innerHTML = "<input type='checkbox' id=checkbox" + (i + 1) + ">";
     }
     document.getElementById("removeButton").onclick = confirmRemove;
     document.getElementById("removeButton").innerText = "Zatwierdź";
@@ -155,11 +212,11 @@ function removeClick() {
 }
 function confirmRemove() {
     let listElements = document.getElementsByClassName("index");
-    for(let i=0;i<listElements.length;i++){
-        let checkbox = document.getElementById("checkbox"+(i+1));
-        if(checkbox.checked){
-            let removeAt = itemCollection.findIndex(item => item.id===(i+1));
-            itemCollection.splice(removeAt,1);
+    for (let i = 0; i < listElements.length; i++) {
+        let checkbox = document.getElementById("checkbox" + (i + 1));
+        if (checkbox.checked) {
+            let removeAt = itemCollection.findIndex(item => item.id === (i + 1));
+            itemCollection.splice(removeAt, 1);
         }
     }
     localStorage.setItem("collection", JSON.stringify(itemCollection));
@@ -170,8 +227,8 @@ function confirmRemove() {
     enableButtons();
 }
 function recount() {
-    for(let i=0;i<itemCollection.length;i++){
-        itemCollection[i].id=i+1;
+    for (let i = 0; i < itemCollection.length; i++) {
+        itemCollection[i].id = i + 1;
     }
     localStorage.setItem("collection", JSON.stringify(itemCollection));
 }
@@ -179,13 +236,13 @@ function recount() {
 function moveClick() {
     disableButtons("moveButton");
     let listElements = document.getElementsByClassName("index");
-    for(let i=0;i<listElements.length;i++){
-        if(i == 0){
-            listElements[i].innerHTML = "<button id="+i+" onclick="+"moveButtonDown(this.id)"+">▼</button>"
-        } else if (i == listElements.length - 1){
-            listElements[i].innerHTML = "<button id="+i+" onclick="+"moveButtonUp(this.id)"+">▲</button>"
-        } else{
-            listElements[i].innerHTML = "<button id="+i+" onclick="+"moveButtonUp(this.id)"+">▲</button><br><button id="+i+" onclick="+"moveButtonDown(this.id)"+">▼</button>";
+    for (let i = 0; i < listElements.length; i++) {
+        if (i == 0) {
+            listElements[i].innerHTML = "<button id=" + i + " onclick=" + "moveButtonDown(this.id)" + ">▼</button>"
+        } else if (i == listElements.length - 1) {
+            listElements[i].innerHTML = "<button id=" + i + " onclick=" + "moveButtonUp(this.id)" + ">▲</button>"
+        } else {
+            listElements[i].innerHTML = "<button id=" + i + " onclick=" + "moveButtonUp(this.id)" + ">▲</button><br><button id=" + i + " onclick=" + "moveButtonDown(this.id)" + ">▼</button>";
         }
     }
     document.getElementById("moveButton").onclick = confirmMoves;
@@ -201,8 +258,8 @@ function moveButtonDown(id) {
     refresh();
     moveClick();
 }
-function moveButtonUp(id){
-    itemCollection.splice(id-1, 0, itemCollection.splice(id, 1)[0]);
+function moveButtonUp(id) {
+    itemCollection.splice(id - 1, 0, itemCollection.splice(id, 1)[0]);
     localStorage.setItem("collection", JSON.stringify(itemCollection));
     recount();
     refresh();
