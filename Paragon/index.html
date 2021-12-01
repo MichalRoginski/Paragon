@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="index.js"></script>
+    <script src="index.js" defer></script>
     <link rel="stylesheet" href="index.css">
     <meta charset="UTF-8">
     <title>Title</title>
@@ -9,11 +9,11 @@
 <body>
     <div class="flex-container">
         <div>
-            <button onclick="addClick()" id="addButton">Dodaj</button>
+            <button onclick="addClick()" id="addButton" class="button">Dodaj</button>
             <br>
-            <button onclick="resetLocalstorage()" id="resetButton">Nowy paragon</button>
+            <button onclick="resetLocalstorage()" id="resetButton" class="button">Nowy paragon</button>
             <br>
-            <button onclick="refresh()" id="refreshButton">Odśwież widok</button>
+            <button onclick="refresh()" id="refreshButton" class="button">Odśwież widok</button>
         </div>
         <div>
             <table>
