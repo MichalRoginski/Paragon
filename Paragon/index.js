@@ -11,6 +11,7 @@ class Item {
         this.ccount = count;
         this.price = price;
         this.sum = count * price;
+        this.sum = (+this.sum).toFixed(2);
     }
 }
 function disableButtons(except){
@@ -65,6 +66,8 @@ function confirmClick() {
         count=0;
     if(isNaN(price)||price.length===0)
         price=0;
+    price = (+price).toFixed(2);
+    count = (+count).toFixed(2);
     if(name.length===0)
         name = "placeholder";
     let newRow = new Item(id, name, count, price);
@@ -85,7 +88,7 @@ function refresh() {
     let oldRow = document.getElementById("startingRow");
     let allSum = 0;
     for (let i = 0; i < itemCollection.length; i++) {
-        allSum += itemCollection[i].sum;
+        allSum += (+itemCollection[i].sum);
         let newRow = document.createElement("tr");
         newRow.addEventListener("dblclick", function editStart(){
             if(editing === true)
@@ -110,7 +113,9 @@ function refresh() {
                     if(isNaN(itemCollection[i].price)||itemCollection[i].price.length===0)
                         itemCollection[i].price=0;
                     itemCollection[i].sum = (itemCollection[i].price * itemCollection[i].ccount);
-
+                    itemCollection[i].price = (+itemCollection[i].price).toFixed(2);
+                    itemCollection[i].ccount = (+itemCollection[i].ccount).toFixed(2);
+                    itemCollection[i].sum = (+itemCollection[i].sum).toFixed(2);
                     localStorage.setItem("collection", JSON.stringify(itemCollection));
                     this.removeEventListener("keyup",editEnd);
                     refresh();
@@ -124,11 +129,12 @@ function refresh() {
         newRow.innerHTML = "<td class='index'>" + itemCollection[i].id + "</td>" +
             "<td>" + itemCollection[i].name + "</td>" +
             "<td>" + itemCollection[i].ccount + "</td>" +
-            "<td>" + itemCollection[i].price + "</td>" +
+            "<td>" + itemCollection[i].price + " zł</td>" +
             "<td>" + itemCollection[i].sum + " zł</td>";
         oldRow.after(newRow);
         oldRow = newRow;
     }
+    allSum = (+allSum).toFixed(2);
     document.getElementById("allSum").innerText = allSum + " zł";
 }
 
