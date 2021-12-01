@@ -166,6 +166,7 @@ function recount() {
 }
 
 function moveClick() {
+    disableButtons("moveButton");
     let listElements = document.getElementsByClassName("index");
     for(let i=0;i<listElements.length;i++){
         if(i == 0){
@@ -178,9 +179,12 @@ function moveClick() {
     }
     document.getElementById("moveButton").onclick = confirmMoves;
     document.getElementById("moveButton").innerText = "Anuluj";
+
 }
 function moveButtonDown(id) {
-    itemCollection.splice(id+1, 0, itemCollection.splice(id, 1)[0]);
+    let id1 = ++id;
+    id--;
+    itemCollection.splice((id1), 0, itemCollection.splice(id, 1)[0]);
     localStorage.setItem("collection", JSON.stringify(itemCollection));
     recount();
     refresh();
@@ -198,6 +202,6 @@ function confirmMoves() {
     refresh();
     document.getElementById("moveButton").onclick = moveClick;
     document.getElementById("moveButton").innerText = "Przesuń";
-
+    enableButtons();
 }
 refresh();
