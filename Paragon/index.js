@@ -2,7 +2,6 @@ let itemCollection = [];
 let editing = false;
 if (localStorage.getItem("collection").length > 2) {
     itemCollection = JSON.parse(localStorage.getItem("collection"));
-
 }
 
 class Item {
@@ -19,6 +18,7 @@ function disableButtons(except){
     for(let i=0;i<buttons.length;i++){
         buttons[i].disabled = true;
     }
+    editing = true;
     if(except != "nothing")
         document.getElementById(except).disabled = false;
 }
@@ -27,6 +27,7 @@ function enableButtons(){
     for(let i=0;i<buttons.length;i++){
         buttons[i].disabled = false;
     }
+    editing = false;
 }
 function addClick() {
 
@@ -60,10 +61,12 @@ function confirmClick() {
     let name = document.getElementById("inputName").value;
     let count = document.getElementById("inputCount").value;
     let price = document.getElementById("inputPrice").value;
-    if(isNaN(count))
+    if(isNaN(count)||count.length===0)
         count=0;
-    if(isNaN(price))
+    if(isNaN(price)||price.length===0)
         price=0;
+    if(name.length===0)
+        name = "placeholder";
     let newRow = new Item(id, name, count, price);
     itemCollection.push(newRow);
     localStorage.setItem("collection", JSON.stringify(itemCollection));
@@ -100,9 +103,11 @@ function refresh() {
                     itemCollection[i].name = document.getElementById("inputName"+itemCollection[i].id).value;
                     itemCollection[i].ccount = document.getElementById("inputCount"+itemCollection[i].id).value;
                     itemCollection[i].price = document.getElementById("inputPrice"+itemCollection[i].id).value;
-                    if(isNaN(itemCollection[i].ccount))
+                    if(itemCollection[i].name.length===0)
+                        itemCollection[i].name = "placeholder";
+                    if(isNaN(itemCollection[i].ccount)||itemCollection[i].ccount.length===0)
                         itemCollection[i].ccount=0;
-                    if(isNaN(itemCollection[i].price))
+                    if(isNaN(itemCollection[i].price)||itemCollection[i].price.length===0)
                         itemCollection[i].price=0;
                     itemCollection[i].sum = (itemCollection[i].price * itemCollection[i].ccount);
 
